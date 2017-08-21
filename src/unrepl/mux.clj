@@ -5,12 +5,13 @@
   ([] (mux clojure.core.server/repl))
   ([accept] (mux accept (* 16 1024)))
   ([accept pipe-size]
-    (let [out *out*
+    (let [out (java.io.BufferedWriter. *out*)
+          sched (java.util.concurrent.Executors/newScheduledThreadPool 1)
           tagging-writer
           (fn [tag]
             (proxy [java.io.Writer] []
               (close [] (locking out
-                          (binding [*out* out]
+                          (binding [*out* out *print-readably* true]
                             (prn [tag nil]))))
               (flush [] (locking out
                           (binding [*out* out]
@@ -39,6 +40,7 @@
                                    (accept)))
                              Thread. .start)
                            pipe-in))]
+      (.scheduleAtFixedRate sched #(locking out (.flush out)) 50 50 java.util.concurrent.TimeUnit/MILLISECONDS)
       (loop [channels {}]
         (when-some [[tag ^String content] (clojure.edn/read)]
           (recur
