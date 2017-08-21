@@ -18,7 +18,7 @@
               (write
                 ([x]
                   (locking out
-                    (binding [*out* out]
+                    (binding [*out* out *print-readably* true]
                       (prn [tag (cond 
                                   (string? x) x
                                   (integer? x) (str (char x))
@@ -26,14 +26,14 @@
                 ([string-or-chars off len]
                   (when (pos? len)
                     (locking out
-                      (binding [*out* out]
+                      (binding [*out* out *print-readably* true]
                         (prn [tag (subs (if (string? string-or-chars) string-or-chars (String. ^chars string-or-chars))
                                     off (+ off len))]))))))))
           spawn-thread (fn [tag]
                          (let [pipe-in (java.io.PipedWriter.)
                                pipe-out (-> (java.io.PipedReader. pipe-in pipe-size)
                                           clojure.lang.LineNumberingPushbackReader.)]
-                           (-> (fn [] 
+                           (-> (fn []
                                  (binding [*in* pipe-out
                                            *out* (tagging-writer tag)]
                                    (accept)))
