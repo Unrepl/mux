@@ -2,6 +2,10 @@
 
 Multiplexing repls.
 
+`mux` is a proof of concept that even in constrained environments where you can't create new connections (eg `stdin/stdout`, serial line, awful tunnel) it's possible to upgrade this single (and precious!) connection to a multiplexed link which allows you to create as many virtual connections as you wish.
+
+Hence the unrepl requirement of being able to create several connections is satisfied.
+
 ## Usage
 
 `mux` upgrades a repl to a multiplexed one. It takes two arguments `accept` (defaults to `clojure.core.server`) and `pipe-size` (defaults to 16384 chars).
